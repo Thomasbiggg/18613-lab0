@@ -18,7 +18,7 @@
 
 #include <stdlib.h>
 #include <string.h>
-
+#include <stdio.h>
 /**
  * @brief Allocates a new queue
  * @return The new queue, or NULL if memory allocation failed
@@ -92,7 +92,7 @@ bool queue_insert_head(queue_t *q, const char *s) {
     /* What if either call to malloc returns NULL? */
     if (!newh) return false;
     
-    char *sp = (char *)malloc(strlen(s) + 1);
+    char *sp = malloc(strlen(s) + 1);
     if (sp) {
         strcpy(sp, s);
         // assign s to the ele value
@@ -107,7 +107,6 @@ bool queue_insert_head(queue_t *q, const char *s) {
 
     // if previously empty, set tail to head
     if (queue_size(q) == 1) q->tail = newh;
-
     return true;
 }
 
@@ -137,7 +136,7 @@ bool queue_insert_tail(queue_t *q, const char *s) {
 
     if (!newh) return false;
     
-    char *sp = (char *)malloc(strlen(s) + 1);
+    char *sp = malloc(strlen(s)+1);
     if (sp) {
         strcpy(sp, s);
         // assign s to the ele value
@@ -192,6 +191,8 @@ bool queue_remove_head(queue_t *q, char *buf, size_t bufsize) {
     }
     free(node);
     (q->count)--;
+
+    if (!q->count) q->tail = NULL;
     return true;
 }
 
@@ -210,7 +211,7 @@ size_t queue_size(queue_t *q) {
     /* Remember: It should operate in O(1) time */
 
     // A vaiable in queue_t
-    return (size_t)q->count;
+    return (size_t)q->count/sizeof(int);
 }
 
 /**
