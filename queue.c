@@ -48,16 +48,17 @@ void queue_free(queue_t *q) {
     /* Free queue structure */
 
     // loop through the linkedlist to free every ele
-    list_ele_t *node = q->head;
+    list_ele_t *node = &(q->head);
     while (node->next) {
-        list_ele_t* cur_node = node;
-
+        // save the address of cur node as temp node
+        list_ele_t *temp_node = node;
+        // got to next
         node = node->next;
-
-        if (cur_node->value) {
+        // free the cur node
+        if (temp_node->value) {
             free(cur_node->value);
         };
-        free(cur_node);
+        free(temp_node);
 
     }
     // the head and tail is already freed in loop, therefore just set to NULL
@@ -225,13 +226,13 @@ void queue_reverse(queue_t *q) {
     /* You need to write the code for this function */
     
     // swap head and tail first
-    list_ele_t* temp_tail = q->tail;
+    list_ele_t *temp_tail = &(q->tail);
     q->tail = q->head;
-    q->head = temp_tail;
+    q->head = *temp_tail;
 
-    list_ele_t* prev_n = NULL;
-    list_ele_t* cur_n = q->tail;
-    list_ele_t* next_n = NULL;
+    list_ele_t *prev_n = NULL;
+    list_ele_t *cur_n = q->tail;
+    list_ele_t *next_n = NULL;
 
     while (cur_n) {
         next_n = cur_n->next;
