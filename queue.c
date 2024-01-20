@@ -46,26 +46,28 @@ queue_t *queue_new(void) {
 void queue_free(queue_t *q) {
     /* How about freeing the list elements and the strings? */
     /* Free queue structure */
-
     // loop through the linkedlist to free every ele
-    list_ele_t *node = q->head;
-    while (node->next) {
-        // save the address of cur node as temp node
-        list_ele_t *temp_node = node;
-        // got to next
-        node = node->next;
-        // free the cur node
-        if (temp_node->value) {
-            free(temp_node->value);
-        };
-        free(temp_node);
+    if (q) {
+        list_ele_t *node = q->head;
+        while (node) {
+            // save the address of cur node as temp node
+            list_ele_t *temp_node = node;
+            // got to next
+            node = node->next;
+            // free the cur node
+            if (temp_node->value) {
+                free(temp_node->value);
+            };
+            free(temp_node);
 
+        }
+        // the head and tail is already freed in loop, therefore just set to NULL
+        q->head = NULL;
+        q->tail = NULL;
+        q->count = 0;
+        free(q);
     }
-    // the head and tail is already freed in loop, therefore just set to NULL
-    q->head = NULL;
-    q->tail = NULL;
-    q->count = 0;
-    free(q);
+    
 }
 
 /**
@@ -93,12 +95,14 @@ bool queue_insert_head(queue_t *q, const char *s) {
     if (!newh) return false;
     
     char *sp = malloc(strlen(s) + 1);
-    if (sp) {
-        strcpy(sp, s);
-        // assign s to the ele value
-        newh->value = sp;
-    };
-
+    // free memory if newh succeed but sp failed
+    if (!sp) {
+        free(newh);
+        return false;
+    }
+    strcpy(sp, s);
+    // assign s to the ele value
+    newh->value = sp;
     newh->next = q->head;
     q->head = newh;
 
@@ -106,8 +110,9 @@ bool queue_insert_head(queue_t *q, const char *s) {
     (q->count)++;
 
     // if previously empty, set tail to head
-    if (queue_size(q) == 1) q->tail = newh;
+    if (!(q->tail)) q->tail = q->head;
     return true;
+
 }
 
 /**
@@ -137,12 +142,15 @@ bool queue_insert_tail(queue_t *q, const char *s) {
     if (!newh) return false;
     
     char *sp = malloc(strlen(s)+1);
-    if (sp) {
-        strcpy(sp, s);
-        // assign s to the ele value
-        newh->value = sp;
-    };
-
+    // free memory if newh succeed but sp failed
+    if (!sp) {
+        free(newh);
+        return false;
+    }
+    
+    strcpy(sp, s);
+    // assign s to the ele value
+    newh->value = sp;
     q->tail->next = newh;
     newh->next = NULL;
 
@@ -152,9 +160,10 @@ bool queue_insert_tail(queue_t *q, const char *s) {
     (q->count)++;
 
     // if previously empty, set head to tail too
-    if (queue_size(q) == 1) q->head = newh;
+    if (!(q->head)) q->head = q->tail;
 
     return true;
+    
 }
 
 /**
@@ -181,19 +190,23 @@ bool queue_remove_head(queue_t *q, char *buf, size_t bufsize) {
     if (bufsize == 0) return false;
 
     list_ele_t *node = q->head;
-    q->head = node->next;
-    if (node->value) {
-        
-        strncpy(buf, node->value, bufsize - 1);
-        buf[bufsize - 1] = '\0';
+    if (node) {
+        q->head = node->next;
+        if (node->value) {
+            
+            strncpy(buf, node->value, bufsize - 1);
+            buf[bufsize - 1] = '\0';
 
-        free(node->value);
-    }
-    free(node);
-    (q->count)--;
+            free(node->value);
+        }
+        free(node);
+        (q->count)--;
 
-    if (!q->count) q->tail = NULL;
-    return true;
+        if (!(q->tail)) q->tail = NULL;
+        return true;
+    } 
+    return false;
+
 }
 
 /**
@@ -211,7 +224,11 @@ size_t queue_size(queue_t *q) {
     /* Remember: It should operate in O(1) time */
 
     // A vaiable in queue_t
-    return (size_t)q->count/sizeof(int);
+    if (q) {
+        return ((size_t)(q->count)/sizeof(int));
+    } else {
+        return 0;
+    }
 }
 
 /**
@@ -227,21 +244,24 @@ void queue_reverse(queue_t *q) {
     /* You need to write the code for this function */
     
     // swap head and tail first
-    list_ele_t *temp_tail = q->tail;
-    q->tail = q->head;
-    q->head = temp_tail;
+    if (q) {
+        list_ele_t *temp_tail = q->tail;
+        q->tail = q->head;
+        q->head = temp_tail;
 
-    list_ele_t *prev_n = NULL;
-    list_ele_t *cur_n = q->tail;
-    list_ele_t *next_n = NULL;
+        list_ele_t *prev_n = NULL;
+        list_ele_t *cur_n = q->tail;
+        list_ele_t *next_n = NULL;
 
-    while (cur_n) {
-        next_n = cur_n->next;
-        cur_n->next = prev_n;
+        while (cur_n) {
+            next_n = cur_n->next;
+            cur_n->next = prev_n;
 
-        prev_n = cur_n;
-        cur_n = next_n;
-        
+            prev_n = cur_n;
+            cur_n = next_n;
+            
+        }
     }
+    
 
 }
