@@ -48,7 +48,7 @@ void queue_free(queue_t *q) {
     /* Free queue structure */
 
     // loop through the linkedlist to free every ele
-    list_ele_t *node = &(q->head);
+    list_ele_t *node = q->head;
     while (node->next) {
         // save the address of cur node as temp node
         list_ele_t *temp_node = node;
@@ -56,7 +56,7 @@ void queue_free(queue_t *q) {
         node = node->next;
         // free the cur node
         if (temp_node->value) {
-            free(cur_node->value);
+            free(temp_node->value);
         };
         free(temp_node);
 
@@ -106,7 +106,7 @@ bool queue_insert_head(queue_t *q, const char *s) {
     (q->count)++;
 
     // if previously empty, set tail to head
-    if (queue_size(q) == 1) q->tail = q->head;
+    if (queue_size(q) == 1) q->tail = newh;
 
     return true;
 }
@@ -153,7 +153,7 @@ bool queue_insert_tail(queue_t *q, const char *s) {
     (q->count)++;
 
     // if previously empty, set head to tail too
-    if (queue_size(q) == 1) q->head = q->tail;
+    if (queue_size(q) == 1) q->head = newh;
 
     return true;
 }
@@ -226,9 +226,9 @@ void queue_reverse(queue_t *q) {
     /* You need to write the code for this function */
     
     // swap head and tail first
-    list_ele_t *temp_tail = &(q->tail);
+    list_ele_t *temp_tail = q->tail;
     q->tail = q->head;
-    q->head = *temp_tail;
+    q->head = temp_tail;
 
     list_ele_t *prev_n = NULL;
     list_ele_t *cur_n = q->tail;
