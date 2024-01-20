@@ -209,7 +209,7 @@ size_t queue_size(queue_t *q) {
     /* Remember: It should operate in O(1) time */
 
     // A vaiable in queue_t
-    return q->count;
+    return (size_t)q->count;
 }
 
 /**
