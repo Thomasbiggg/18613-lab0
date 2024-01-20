@@ -29,7 +29,6 @@ queue_t *queue_new(void) {
     
     // what do programmers usually do when return NULL? how to look if there is anything to free
     if (!q) {
-        printf("Too Bad");
         return NULL;
     };
 
@@ -64,7 +63,7 @@ void queue_free(queue_t *q) {
     // the head and tail is already freed in loop, therefore just set to NULL
     q->head = NULL;
     q->tail = NULL;
-
+    q->count = 0;
     free(q);
 }
 
@@ -181,9 +180,6 @@ bool queue_remove_head(queue_t *q, char *buf, size_t bufsize) {
     if (!buf) return false;
     if (bufsize == 0) return false;
 
-
-    
-    
     list_ele_t *node = q->head;
     q->head = node->next;
     if (node->value) {
@@ -194,7 +190,7 @@ bool queue_remove_head(queue_t *q, char *buf, size_t bufsize) {
         free(node->value);
     }
     free(node);
-
+    (q->count)--;
     return true;
 }
 
@@ -237,7 +233,7 @@ void queue_reverse(queue_t *q) {
     list_ele_t* cur_n = q->tail;
     list_ele_t* next_n = NULL;
 
-    while (cur) {
+    while (cur_n) {
         next_n = cur_n->next;
         cur_n->next = prev_n;
 
